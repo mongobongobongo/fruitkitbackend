@@ -4,21 +4,33 @@ var promise = require('promise');
 
 /* RETRIEVE customer listing. */
 router.get('/', function (req, res, next) {
-        var baa = mongoFetch('customers', function (err, customers) {
-            console.log ('GOT STUFF: ', customers);
-            res.send(customers);
+        var baa = mongoFetch('customers', undefined, function (err, customers) {
+            if (err) {
+
+            } else {
+
+                res.status(200).send(customers)
+            }
         });
     })
     .post ('/', function (req, res, next) {
-        mongoCreate('customers', '{"name" : "BATMAN"}');
+        var body = req.body;
+        mongoCreate('customers', body);
         res.send('Created Customer. Now go and fetch it!');
     });
 
 
 /* RETRIEVE customer specific user. */
 router.get('/:id', function (req, res, next) {
+
         var params = req.params;
-        res.status(200).send('Retrieved a customer: ', params.id)
+        var baa = mongoFetch('customers', {"_id": ObjectId(params.id)}, function (err, customers) {
+            if (err) {
+
+            } else {
+                res.status(200).send(customers);
+            }
+        });
     })
     .put ('/:id', function (req, res, next) {
         var params = req.params;
@@ -45,43 +57,38 @@ var ObjectId = require('mongodb').ObjectID;
 
 function retrieve(db, collection, query, callback) {
     var cursor;
-    var data=[];
-    console.log ('RETRIEVING NOW');
+    var data = [];
     if (query == undefined) {
-        console.log ("it's undefined");
         cursor = db.collection(collection).find();
     } else {
         cursor = db.collection(collection).find(query);
     }
 
-    console.log ("Cursor is now ", cursor);
     cursor.each(function (err, doc) {
-        console.log ('wtf is doc ', doc);
         assert.equal(err, null);
         if (doc != null) {
-            console.log ('pushing data....');
             data.push(doc);
         } else {
-            callback();
-            console.log ('RETURNING data: ', data);
-            return data;
+            callback(data);
         }
     });
 
 };
 
 
-function mongoFetch(collection, query) {
+function mongoFetch(collection, query, callbackfunction) {
+
 
     var results = null;
 
     MongoClient.connect(url, function (err, db) {
         assert.equal(null, err);
-        results = retrieve(db, collection, query, function () {
+        results = retrieve(db, collection, query, function (results) {
+            callbackfunction(err, results);
             db.close();
+
         });
     });
-    return results;
 };
 
 function mongoUpdate() {
@@ -90,8 +97,10 @@ function mongoUpdate() {
 
 function mongoCreate(collection, payload) {
     //Transform the text to a usable json object
-    payload = JSON.parse(payload);
+    //payload = JSON.parse(payload);
+    console.log ("Creating new thing");
     console.log (payload);
+    
 
     function insertDocument(db, collection, payload, callback) {
         console.log (collection);
