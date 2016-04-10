@@ -54,13 +54,9 @@ router.get('/:id', function (req, res, next) {
     })
     .delete ('/:id', function (req, res, next) {
         var params = req.params;
-        //TODO: Delete
-
-        var payload = {};
         var id = {_id: ObjectId(params.id)};
-        extend(true, payload, id, req.body);
 
-        MongoConnect.delete(collection, payload, function (err, customer) {
+        MongoConnect.delete(collection, id, function (err, customer) {
             if (err) {
                 throw err;
             } else {
