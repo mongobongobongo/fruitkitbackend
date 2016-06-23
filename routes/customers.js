@@ -32,7 +32,7 @@ router.get('/', function (req, res, next) {
 
 /* RETRIEVE customer specific user. */
 router.get('/:id', function (req, res, next) {
-
+console.log("GETTING CUSTOMER");
         var params = req.params;
         var baa = MongoConnect.retrieve(collection, {"_id": ObjectId(params.id)}, function (err, customers) {
             if (err) {

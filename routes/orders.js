@@ -30,7 +30,10 @@ router.get('/', function (req, res, next) {
 /* RETRIEVE customer specific user. */
 router.get('/:id', function (req, res, next) {
 
+
+    console.log("Getting one thing");
         var params = req.params;
+        console.log(req.params);
         var baa = MongoConnect.retrieve(collection, {"_id": ObjectId(params.id)}, function (err, customers) {
             if (err) {
                 throw err;
@@ -45,6 +48,7 @@ router.get('/:id', function (req, res, next) {
         //TODO: Update
         //Create a payload object for update function.
         var id = {_id: ObjectId(params.id)};
+
         MongoConnect.update(collection, id, req.body, function (err, result) {
             if (err) {
                 throw err;
