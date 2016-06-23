@@ -40,6 +40,7 @@ router.get('/:id', function (req, res, next) {
         });
     })
     .put ('/:id', function (req, res, next) {
+        console.log("trying to PUT orded");
         var params = req.params;
         //TODO: Update
         //Create a payload object for update function.
@@ -54,8 +55,9 @@ router.get('/:id', function (req, res, next) {
     })
     .delete ('/:id', function (req, res, next) {
         var params = req.params;
+        console.log(params.id);
         var id = {_id: ObjectId(params.id)};
-
+        console.log(id);
         MongoConnect.delete(collection, id, function (err, customer) {
             if (err) {
                 throw err;

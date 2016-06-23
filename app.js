@@ -10,8 +10,8 @@ var MongoClient = require('mongodb').MongoClient;
 var routes = require('./routes/index');
 var customers = require('./routes/customers');
 var packages = require('./routes/packages');
-var orders = require('./routes/packages');
-
+var orders = require('./routes/orders');
+var employees = require('./routes/employees');
 
 var app = express();
 
@@ -42,6 +42,7 @@ app.use('/', routes);
 app.use('/customers', customers);
 app.use('/orders', orders);
 app.use('/packages', packages);
+app.use('/employees', employees);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -15,6 +15,9 @@ router.get('/', function (req, res, next) {
         });
     })
     .post ('/', function (req, res, next) {
+      //  console.log(req.body);
+      //  console.log(req);
+        
         var body = req.body;
         MongoConnect.create(collection, body, function (err, result) {
             if (err) {
