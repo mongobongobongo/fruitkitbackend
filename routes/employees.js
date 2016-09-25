@@ -4,13 +4,13 @@ var MongoConnect = require('../lib/mongoConnect.js');
 var router = express.Router();
 var collection = 'employees';
 
-/* RETRIEVE customer listing. */
+/* RETRIEVE employee  listing. */
 router.get('/', function (req, res, next) {
-        var baa = MongoConnect.retrieve(collection, undefined, function (err, customers) {
+        var baa = MongoConnect.retrieve(collection, undefined, function (err, employees) {
             if (err) {
                 throw err;
             } else {
-                res.status(200).send(customers)
+                res.status(200).send(employees);
             }
         });
     })
@@ -27,15 +27,15 @@ router.get('/', function (req, res, next) {
     });
 
 
-/* RETRIEVE customer specific user. */
+/* RETRIEVE employee  specific user. */
 router.get('/:id', function (req, res, next) {
 
         var params = req.params;
-        var baa = MongoConnect.retrieve(collection, {"_id": ObjectId(params.id)}, function (err, customers) {
+        var baa = MongoConnect.retrieve(collection, {"_id": ObjectId(params.id)}, function (err, employees) {
             if (err) {
                 throw err;
             } else {
-                res.status(200).send(customers);
+                res.status(200).send(employees);
             }
         });
     })
