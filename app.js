@@ -5,17 +5,12 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
-var mongoose = require('mongoose');
-var passport = require('passport');
-var jwt = require('jwt-simple');
 
 var routes = require('./routes/index');
 var customers = require('./routes/customers');
 var packages = require('./routes/packages');
 var orders = require('./routes/orders');
 var employees = require('./routes/employees');
-//var config = require('./config/database'); // get db config file
-//var User = require('./app/models/user'); // get the mongoose model
 
 var app = express();
 
@@ -30,7 +25,7 @@ var allowCrossDomain = function(req, res, next) {
   res.header('Access-Control-Allow-Headers', 'Content-Type');
 
   next();
-}
+};
 
 app.use(allowCrossDomain);
 
