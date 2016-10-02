@@ -14,7 +14,7 @@ var debug = require('debug')('fruitkit:server');
 /**
  * Get port from environment and store in Express.
  */
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || '3001');
 
 //config + authentification
 var config = require('./config/database'); // get db config file
@@ -60,7 +60,7 @@ app.use('/packages', packages);
 app.use('/employees', employees);
 
 /**
- * Create HTTP server.
+ * Create HTTP server. 1st
  */
 
 var server = http.createServer(app);
@@ -166,7 +166,7 @@ function onListening() {
 }
 
 // connect to database
-mongoose.connect(config.database);
+//mongoose.connect(config.database);
  
 // pass passport for configuration
 require('./config/passport')(passport);
@@ -196,7 +196,7 @@ apiRoutes.post('/signup', function(req, res) {
 // connect the api routes under /api/*
 app.use('/api', apiRoutes);
 // connect to database
-mongoose.connect(config.database);
+//mongoose.connect(config.database);
  
 // pass passport for configuration
 require('./config/passport')(passport);
@@ -226,35 +226,5 @@ apiRoutes.post('/signup', function(req, res) {
 // connect the api routes under /api/*
 app.use('/api', apiRoutes);
 
-// connect to database
-mongoose.connect(config.database);
- 
-// pass passport for configuration
-require('./config/passport')(passport);
- 
-// bundle our routes
-var apiRoutes = express.Router();
- 
-// create a new user account (POST http://localhost:8080/api/signup)
-apiRoutes.post('/signup', function(req, res) {
-  if (!req.body.name || !req.body.password) {
-    res.json({success: false, msg: 'Please pass name and password.'});
-  } else {
-    var newUser = new User({
-      name: req.body.name,
-      password: req.body.password
-    });
-    // save the user
-    newUser.save(function(err) {
-      if (err) {
-        return res.json({success: false, msg: 'Username already exists.'});
-      }
-      res.json({success: true, msg: 'Successful created new user.'});
-    });
-  }
-});
- 
-// connect the api routes under /api/*
-app.use('/api', apiRoutes);
 
 module.exports = app;
