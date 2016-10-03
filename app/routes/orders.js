@@ -10,7 +10,7 @@ router.get('/', function (req, res, next) {
             if (err) {
                 throw err;
             } else {
-                res.status(200).send(customers)
+                res.status(200).send(customers);
             }
         });
     })

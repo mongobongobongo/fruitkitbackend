@@ -21,12 +21,13 @@ var config = require('./config/database'); // get db config file
 var User = require('./models/user'); // get the mongoose model
 
 // routes
+/*
 var routes = require('./routes/index');
 var customers = require('./routes/customers');
 var packages = require('./routes/packages');
 var orders = require('./routes/orders');
 var employees = require('./routes/employees');
-
+*/
 var app = express();
 
 // view engine setup
@@ -37,7 +38,7 @@ var allowCrossDomain = function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
-
+  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
   next();
 };
 
@@ -53,12 +54,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Use the passport package in our application
 app.use(passport.initialize());
 
+// connect the api routes under /api/*
+/*
 app.use('/', routes);
 app.use('/customers', customers);
 app.use('/orders', orders);
 app.use('/packages', packages);
 app.use('/employees', employees);
-
+*/
 /**
  * Create HTTP server. 1st
  */
@@ -69,11 +72,11 @@ var server = http.createServer(app);
  */
 
 server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+//server.on('error', onError);
+//server.on('listening', onListening);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+/*app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
@@ -101,7 +104,7 @@ app.use(function(err, req, res, next) {
     message: err.message,
     error: {}
   });
-});
+});*/
 
 
 /**
@@ -110,17 +113,14 @@ app.use(function(err, req, res, next) {
 
 function normalizePort(val) {
   var port = parseInt(val, 10);
-
   if (isNaN(port)) {
     // named pipe
     return val;
   }
-
   if (port >= 0) {
     // port number
     return port;
   }
-
   return false;
 }
 
@@ -128,7 +128,7 @@ function normalizePort(val) {
  * Event listener for HTTP server "error" event.
  */
 
-function onError(error) {
+/*function onError(error) {
   if (error.syscall !== 'listen') {
     throw error;
   }
@@ -150,21 +150,20 @@ function onError(error) {
     default:
       throw error;
   }
-}
+}*/
 
 /**
  * Event listener for HTTP server "listening" event.
  */
 
-function onListening() {
+/*function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
-  console.log ('Listening on ' + bind);
-}
-
+  console.log('Listening on ' + bind);
+}*/
 // demo Route (GET http://localhost:8080)
 // ...
  
@@ -198,3 +197,62 @@ apiRoutes.post('/signup', function(req, res) {
  
 // connect the api routes under /api/*
 app.use('/api', apiRoutes);
+
+// route to authenticate a user (POST http://localhost:8080/api/authenticate)
+apiRoutes.post('/authenticate', function(req, res) {
+  User.findOne({
+    name: req.body.name
+  }, function(err, user) {
+    if (err) throw err;
+ 
+    if (!user) {
+      res.send({success: false, msg: 'Authentication failed. User not found.'});
+    } else {
+      // check if password matches
+      user.comparePassword(req.body.password, function (err, isMatch) {
+        if (isMatch && !err) {
+          // if user is found and password is right create a token
+          var token = jwt.encode(user, config.secret);
+          // return the information including token as JSON
+          res.json({success: true, token: 'JWT ' + token});
+        } else {
+          res.send({success: false, msg: 'Authentication failed. Wrong password.'});
+        }
+      });
+    }
+  });
+});
+
+// route to a restricted info (GET http://localhost:8080/api/memberinfo)
+apiRoutes.get('/memberinfo', passport.authenticate('jwt', { session: false}), function(req, res) {
+  var token = getToken(req.headers);
+  if (token) {
+    var decoded = jwt.decode(token, config.secret);
+    User.findOne({
+      name: decoded.name
+    }, function(err, user) {
+        if (err) throw err;
+ 
+        if (!user) {
+          return res.status(403).send({success: false, msg: 'Authentication failed. User not found.'});
+        } else {
+          res.json({success: true, msg: 'Welcome in the member area ' + user.name + '!'});
+        }
+    });
+  } else {
+    return res.status(403).send({success: false, msg: 'No token provided.'});
+  }
+});
+ 
+getToken = function (headers) {
+  if (headers && headers.authorization) {
+    var parted = headers.authorization.split(' ');
+    if (parted.length === 2) {
+      return parted[1];
+    } else {
+      return null;
+    }
+  } else {
+    return null;
+  }
+};
