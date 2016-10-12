@@ -10,10 +10,6 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var jwt = require('jwt-simple');
 var debug = require('debug')('fruitkit:server');
-
-/**
- * Get port from environment and store in Express.
- */
 var port = normalizePort(process.env.PORT || '3001');
 
 //config + authentification
@@ -21,13 +17,12 @@ var config = require('./config/database'); // get db config file
 var User = require('./models/user'); // get the mongoose model
 
 // routes
-/*
 var routes = require('./routes/index');
 var customers = require('./routes/customers');
 var packages = require('./routes/packages');
 var orders = require('./routes/orders');
 var employees = require('./routes/employees');
-*/
+
 var app = express();
 
 // view engine setup
@@ -36,9 +31,10 @@ app.set('view engine', 'jade');
 
 var allowCrossDomain = function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
+  res.header("Access-Control-Allow-Credentials", "true");
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
-  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  res.header('Access-Control-Allow-Headers', "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
   next();
 };
 
@@ -54,14 +50,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Use the passport package in our application
 app.use(passport.initialize());
 
+
 // connect the api routes under /api/*
-/*
+
 app.use('/', routes);
 app.use('/customers', customers);
 app.use('/orders', orders);
 app.use('/packages', packages);
 app.use('/employees', employees);
-*/
+
+
 /**
  * Create HTTP server. 1st
  */
@@ -73,7 +71,7 @@ var server = http.createServer(app);
 
 server.listen(port);
 //server.on('error', onError);
-//server.on('listening', onListening);
+server.on('listening', onListening);
 
 // catch 404 and forward to error handler
 /*app.use(function(req, res, next) {
@@ -156,14 +154,14 @@ function normalizePort(val) {
  * Event listener for HTTP server "listening" event.
  */
 
-/*function onListening() {
+function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
   console.log('Listening on ' + bind);
-}*/
+}
 // demo Route (GET http://localhost:8080)
 // ...
  
@@ -194,9 +192,9 @@ apiRoutes.post('/signup', function(req, res) {
     });
   }
 });
- 
-// connect the api routes under /api/*
+ // connect the api routes under /api/*
 app.use('/api', apiRoutes);
+
 
 // route to authenticate a user (POST http://localhost:8080/api/authenticate)
 apiRoutes.post('/authenticate', function(req, res) {
@@ -256,3 +254,6 @@ getToken = function (headers) {
     return null;
   }
 };
+
+
+module.exports = app;
