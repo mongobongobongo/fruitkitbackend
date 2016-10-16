@@ -10,7 +10,7 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var jwt = require('jwt-simple');
 var debug = require('debug')('fruitkit:server');
-var port = normalizePort(process.env.PORT || '3001');
+var port = normalizePort(process.env.PORT || '3000');
 
 //config + authentification
 var config = require('./config/database'); // get db config file
